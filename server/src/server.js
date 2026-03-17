@@ -1,12 +1,17 @@
+
 import http from "http"
 import dotenv from "dotenv"
 import { Server } from "socket.io"
 import app from "./app.js"
 import connectDB from "./config/db.js"
+import {setupSocket} from "./sockets/socketServer.js"
 
 
 // Load environment variables
 dotenv.config()
+
+let databaseConnected = false;
+
 
 const PORT = process.env.PORT || 5000
 
@@ -14,28 +19,17 @@ async function startServer() {
   try {
     
     // 1️ connect database
-    await connectDB()
-    console.log(" Database connected")
+    if (!databaseConnected) {
+      await connectDB()
+      databaseConnected = true;
+    }
 
     // 2️ create http server
     const server = http.createServer(app)
 
-    // 3️ attach socket
-    const io = new Server(server, {
-      cors: {
-        origin: "*"
-      }
-    })
-
-    //  handle socket connections
-    io.on("connection", (socket) => {
-      console.log("User connected:", socket.id)
-
-      socket.on("disconnect", () => {
-        console.log("User disconnected:", socket.id)
-      })
-    })
-
+    // 3️ setup socket server
+    setupSocket(server)
+    
     // 4️ start server
     server.listen(PORT, () => {
       console.log(` Server running on port ${PORT}`)

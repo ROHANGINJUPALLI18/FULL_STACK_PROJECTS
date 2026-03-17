@@ -18,8 +18,9 @@ export const googleLogin = async (token) => {
 
   const { email, name, picture, sub } = payload
 
+  // findOne method is used to find the user in the database.
   let user = await User.findOne({ email })
-
+  // if user not found then create a new user in the database with the information received from the google token.
   if (!user) {
     user = await User.create({
       name,
@@ -28,6 +29,8 @@ export const googleLogin = async (token) => {
       googleId: sub
     })
   }
+  // we need to save the user in the database and then generate a JWT token for the user, which will be used for authentication in subsequent requests. The JWT token will contain the user's ID and will be signed with a secret key.
+  await user.save();
 
   const jwtToken = jwt.sign(
     { userId: user._id },

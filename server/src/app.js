@@ -17,7 +17,7 @@ const app = express();
 app.use(logger);
 
 // the express.json() middleware is used to parse the req.body as JSON
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }))
 
 // enable CORS for all routes and origins
 app.use(cors());

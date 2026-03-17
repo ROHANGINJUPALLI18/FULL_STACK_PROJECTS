@@ -2,13 +2,20 @@
 import { googleLogin } from "../services/auth.service.js";
 
 export const googleAuth = async (req, res, next) => {
+  // this req contains like :-
+  // example req.body = {
+  //   token: "google_token_here"
+  // }
   try {
     const requestBody =
       req.body && typeof req.body === "object" ? req.body : {};
     const token = requestBody.token || requestBody.credential;
 
+    //  this token is the used for the authentication process and it is used in the
+
     if (!token) {
       return res.status(400).json({
+        success: false,
         message: "Google token is required in request body",
       });
     }
