@@ -10,6 +10,7 @@ import { notFOund as notFound } from "./middleware/notFound.middleware.js";
 import conversationRoutes from "./routes/conversation.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -17,13 +18,14 @@ const app = express();
 app.use(logger);
 
 // the express.json() middleware is used to parse the req.body as JSON
-app.use(express.json({ limit: "10kb" }))
+app.use(express.json({ limit: "10kb" }));
 
 // enable CORS for all routes and origins
 app.use(cors());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/messages", messageRoutes);
 

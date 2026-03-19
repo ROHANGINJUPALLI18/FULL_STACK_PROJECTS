@@ -10,6 +10,7 @@ import {
 // create an express route handler for creating a new message
 
 export const sendMessage = async (req, res) => {
+  const io = req.app.get("io");
   const senderId = req.user?.userId || req.user?._id;
   const { conversationId, content, text } = req.body;
 
@@ -20,29 +21,30 @@ export const sendMessage = async (req, res) => {
   }
 
   if (!conversationId || !messageText) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "conversationId and message text are required",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "conversationId and message text are required",
+    });
   }
 
   try {
     const isParticipant = await validateParticipant(conversationId, senderId);
     if (!isParticipant) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "You are not a participant in this conversation",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "You are not a participant in this conversation",
+      });
     }
     const message = await createMessage({
       conversationId,
       sender: senderId,
       text: messageText,
     });
+
+    if (io) {
+      io.to(conversationId).emit("receive_message", message);
+    }
+
     res.status(201).json(message);
   } catch (error) {
     if (error.message === "Conversation not found") {
@@ -56,13 +58,11 @@ export const sendMessage = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid conversationId" });
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to create message",
-        details: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to create message",
+      details: error.message,
+    });
   }
 };
 
@@ -78,12 +78,10 @@ export const fetchMessages = async (req, res) => {
   try {
     const isParticipant = await validateParticipant(conversationId, userId);
     if (!isParticipant) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "You are not a participant in this conversation",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "You are not a participant in this conversation",
+      });
     }
     const messages = await getMessages(conversationId, page, limit);
     res.status(200).json(messages);
@@ -99,12 +97,10 @@ export const fetchMessages = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid conversationId" });
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to get messages",
-        details: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to get messages",
+      details: error.message,
+    });
   }
 };

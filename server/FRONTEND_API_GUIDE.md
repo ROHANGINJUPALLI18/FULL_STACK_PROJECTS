@@ -135,7 +135,39 @@ You can also send:
 
 ---
 
-## 4) Conversation Routes
+## 4) User Routes
+
+### GET `/api/users/search?q=<text>&limit=<number>`
+
+**Meaning:** Search users by name/email for starting conversations.
+
+**How to call:**
+
+- Protected route (JWT required)
+
+Example:
+
+```http
+GET /api/users/search?q=rohan&limit=10
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Success (200):**
+
+```json
+[
+  {
+    "_id": "USER_ID",
+    "name": "Rohan Sharma",
+    "email": "rohan@gmail.com",
+    "avatar": "https://..."
+  }
+]
+```
+
+---
+
+## 5) Conversation Routes
 
 ### POST `/api/conversations`
 
@@ -148,9 +180,9 @@ You can also send:
 Request body:
 
 ```json
-// the ohter user's ID (the one you want to chat with) this will can be obtained from user search endpoint (not implemented yet) or from JWT payload of the other user
+// the other user's ID (the one you want to chat with) can be obtained from GET /api/users/search or from JWT payload of the other user
 // jwt payload example: { _id: "USER_ID", name: "...", email: "...", avatar: "..." }
-// so you can get the other user's ID from their JWT token or from the user search results (when implemented)
+// so you can get the other user's ID from their JWT token or from the user search results
 // example jwt token payload: { _id: "USER_ID_TO_CHAT_WITH", name: "...", email: "...", avatar: "..." }
 {
   "otherUserId": "USER_ID_TO_CHAT_WITH"
@@ -242,7 +274,7 @@ Returns array sorted by latest update (`updatedAt` desc).
 
 ---
 
-## 5) Message Routes
+## 6) Message Routes
 
 ### POST `/api/messages`
 

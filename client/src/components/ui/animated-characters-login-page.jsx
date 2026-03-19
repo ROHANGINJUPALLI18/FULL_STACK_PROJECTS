@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Router, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // login with google imports
@@ -288,8 +288,30 @@ function LoginPage() {
     setError("");
     setIsLoading(true);
 
-    // todo 1 :- validate email and password
+    const trimmedEmail = email.trim();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    if (!trimmedEmail) {
+      setError("Email is required");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!emailPattern.test(trimmedEmail)) {
+      setError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters");
+      setIsLoading(false);
+      return;
+    }
+
+    setError(
+      "Email/password login is not enabled yet. Please use Google Sign-In.",
+    );
     setIsLoading(false);
   };
 
@@ -320,10 +342,12 @@ function LoginPage() {
       if (res.status === 200) {
         setError("");
         console.log("Google login successful");
+        window.location.replace("/chat");
       }
       if (res.status === 201) {
         setError("");
         console.log("Google login successful, new user created");
+        window.location.replace("/chat");
       }
       if (res.status === 400 || res.status === 429 || res.status === 500) {
         setError(`Google login failed: ${data.message}`);

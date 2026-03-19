@@ -32,7 +32,7 @@ export const createMessage = async ({
   text,
   attachments = [],
 }) => {
-  // todo
+  // behavior:
   // 1. create a new message document
   // 2. update the lastMessage field of the conversation
   try {
