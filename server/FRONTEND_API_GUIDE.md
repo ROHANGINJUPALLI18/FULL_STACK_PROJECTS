@@ -148,6 +148,10 @@ You can also send:
 Request body:
 
 ```json
+// the ohter user's ID (the one you want to chat with) this will can be obtained from user search endpoint (not implemented yet) or from JWT payload of the other user
+// jwt payload example: { _id: "USER_ID", name: "...", email: "...", avatar: "..." }
+// so you can get the other user's ID from their JWT token or from the user search results (when implemented)
+// example jwt token payload: { _id: "USER_ID_TO_CHAT_WITH", name: "...", email: "...", avatar: "..." }
 {
   "otherUserId": "USER_ID_TO_CHAT_WITH"
 }
@@ -253,6 +257,7 @@ Request body:
 
 ```json
 {
+  // conversationId is nothing but the _id of the conversation document in DB which you want to send message to, you can get it from the response of creating a conversation or from the list of conversations endpoint
   "conversationId": "CONVERSATION_ID",
   "text": "Hello"
 }
